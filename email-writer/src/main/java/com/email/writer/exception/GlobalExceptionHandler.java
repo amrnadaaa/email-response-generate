@@ -36,11 +36,12 @@ public class GlobalExceptionHandler {
                 .body("JSON array is empty or index does not exist.");
     }
 
-    // Fallback for any other exception
+  
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("An unexpected error occurred: " + ex.getMessage());
     }
 }
+
 
