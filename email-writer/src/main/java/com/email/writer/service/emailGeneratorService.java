@@ -15,7 +15,6 @@ public class emailGeneratorService {
     private final WebClient webClient;
     private final String geminiApiKey;
 
-    // 👇 يمكنك إضافة property لـ model name
     @Value("${gemini.api.model:gemini-2.0-flash}")
     private String geminiModel;
 
@@ -26,17 +25,17 @@ public class emailGeneratorService {
     }
 
     public String generateEmailReplay(EmailDto emailRequest) {
-        // 1. Build Prompt
+        //  Build Prompt
         String prompt = promptBuilder(emailRequest);
 
-        // 2. Build Request Body
+        //  Build Request Body
         Map<String, Object> requestBody = Map.of(
                 "contents", new Object[]{
                         Map.of("parts", new Object[]{
                                 Map.of("text", prompt)
                         })
                 },
-                // 👇 يمكنك إضافة إعدادات توليد
+            
                 "generationConfig", Map.of(
                         "temperature", 0.7,
                         "maxOutputTokens", 500
@@ -47,7 +46,7 @@ public class emailGeneratorService {
             System.out.println("Using model: " + geminiModel);
             System.out.println("API Key (first 10 chars): " + geminiApiKey.substring(0, 10) + "...");
 
-            // 3. استخدم الـ model الصحيح - غير gemini-1.5-flash
+
             String response = webClient.post()
                     .uri(uriBuilder -> uriBuilder
                             .scheme("https")
@@ -56,7 +55,7 @@ public class emailGeneratorService {
                             .queryParam("key", this.geminiApiKey)
                             .build())
                     .header("Content-Type", "application/json")
-                    .header("X-goog-api-key", this.geminiApiKey) // 👈 أضف هذا الـ header
+                    .header("X-goog-api-key", this.geminiApiKey) 
                     .bodyValue(requestBody)
                     .retrieve()
                     .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
@@ -122,4 +121,5 @@ public class emailGeneratorService {
 
         return sb.toString();
     }
+
 }
