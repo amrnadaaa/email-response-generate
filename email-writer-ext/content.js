@@ -1,27 +1,13 @@
-// ============================================
-// Email Writer Assistant - Chrome Extension
-// ============================================
+
 
 console.log("🚀 Email Writer Assistant - LOADED");
 
-// ============================================
-// CONFIGURATION - EDIT THIS SECTION
-// ============================================
 
-// 👇 PUT YOUR GEMINI API KEY HERE
 const GEMINI_API_KEY = "AIzaSyAkjdJrE3tziVMtZht8AvayiCY3o_PbylI";
 
-// 👇 USE THIS MODEL (Works with v1beta API)
 const GEMINI_MODEL = "gemini-2.0-flash"; // ✅ Correct for Chrome Extension
 
-// Alternative models if the above doesn't work:
-// const GEMINI_MODEL = "gemini-1.5-pro-001";
-// const GEMINI_MODEL = "gemini-pro";
-// const GEMINI_MODEL = "gemini-1.0-pro";
 
-// ============================================
-// UI CREATION FUNCTIONS
-// ============================================
 
 function createAIButton() {
   const button = document.createElement("button");
@@ -82,7 +68,7 @@ function createToneSelect() {
     transition: border 0.2s;
   `;
 
-  // Add hover effect
+
   select.addEventListener("mouseenter", () => {
     select.style.borderColor = "#4285f4";
   });
@@ -113,30 +99,27 @@ function createToneSelect() {
   return { wrapper, select };
 }
 
-// ============================================
-// EMAIL CONTENT EXTRACTION
-// ============================================
 
 function getEmailContent() {
   console.log("🔍 Looking for email content...");
   
   // Primary selectors for Gmail email content
   const selectors = [
-    '.ii.gt', // Gmail classic view
-    '.a3s.aiL', // Gmail new view
-    '.h7', // Email body
-    '[role="presentation"]', // Email content container
+    '.ii.gt', 
+    '.a3s.aiL', 
+    '.h7', 
+    '[role="presentation"]', 
     '.gmail_default',
     '.adn.ads',
     '.gs', 
     '.y2',
-    '.ams.bkH', // Thread view
-    '.a3s', // Another common selector
-    '.ii', // Email text
-    '.gmail_extra' // Extra content
+    '.ams.bkH', 
+    '.a3s',
+    '.ii', 
+    '.gmail_extra' 
   ];
 
-  // Try each selector
+
   for (const selector of selectors) {
     try {
       const elements = document.querySelectorAll(selector);
@@ -144,7 +127,7 @@ function getEmailContent() {
         const element = elements[i];
         if (element && element.textContent) {
           const text = element.textContent.trim();
-          // Filter out short or irrelevant text
+         
           if (text.length > 100 && 
               !text.includes("Gmail") && 
               !text.includes("Unsubscribe") &&
@@ -161,7 +144,7 @@ function getEmailContent() {
     }
   }
 
-  // Fallback: Get the largest text block on the page
+ 
   console.log("⚠️ Using fallback method...");
   const allText = document.body.innerText;
   const lines = allText.split('\n')
@@ -185,26 +168,24 @@ function getEmailContent() {
   return "";
 }
 
-// ============================================
-// TEXT INSERTION FUNCTIONS
-// ============================================
+
 
 function insertTextIntoComposeBox(text) {
   console.log("📝 Inserting text into compose box...");
   
-  // Try to find the compose/reply box
+ 
   const composeSelectors = [
-    '[role="textbox"]', // Gmail's main textbox
-    '.Am.Al.editable', // Editable area
-    '.editable', // Any editable element
-    '[contenteditable="true"]', // Contenteditable elements
-    '[aria-label="Message Body"]', // Labeled textbox
-    '.aoD.az6', // Compose box
-    '.LW-avf', // New Gmail compose
-    '.Ar.Au', // Another compose area
-    '.gO.ahJ', // Reply field
-    '.gJ.gK', // Compose text area
-    '.iN' // Input area
+    '[role="textbox"]',
+    '.Am.Al.editable', 
+    '.editable', 
+    '[contenteditable="true"]',
+    '[aria-label="Message Body"]', 
+    '.aoD.az6', 
+    '.LW-avf', 
+    '.Ar.Au', 
+    '.gO.ahJ', 
+    '.gJ.gK', 
+    '.iN' 
   ];
 
   let composeBox = null;
@@ -219,7 +200,7 @@ function insertTextIntoComposeBox(text) {
   if (!composeBox) {
     console.log("⚠️ Compose box not found, trying to find reply area...");
     
-    // Look for reply button and click it
+  
     const replyButtons = [
       '[data-tooltip="Reply"]',
       '[data-tooltip*="Reply"]',
@@ -234,7 +215,7 @@ function insertTextIntoComposeBox(text) {
         console.log(`📍 Clicking reply button: ${buttonSelector}`);
         replyButton.click();
         
-        // Wait for compose box to appear
+        
         setTimeout(() => {
           insertTextIntoComposeBox(text);
         }, 1000);
@@ -246,24 +227,24 @@ function insertTextIntoComposeBox(text) {
   }
 
   try {
-    // Focus on the compose box
+  
     composeBox.focus();
     
-    // Clear existing content
+ 
     composeBox.innerHTML = '';
     
-    // Insert the generated text
+   
     const textNode = document.createTextNode(text);
     composeBox.appendChild(textNode);
     
-    // Trigger input events for Gmail
+  
     const inputEvent = new Event('input', { bubbles: true, cancelable: true });
     composeBox.dispatchEvent(inputEvent);
     
     const changeEvent = new Event('change', { bubbles: true });
     composeBox.dispatchEvent(changeEvent);
     
-    // Also trigger keyup for good measure
+  
     const keyupEvent = new Event('keyup', { bubbles: true });
     composeBox.dispatchEvent(keyupEvent);
     
@@ -275,9 +256,7 @@ function insertTextIntoComposeBox(text) {
   }
 }
 
-// ============================================
-// GEMINI API FUNCTIONS
-// ============================================
+
 
 async function testAPIKey() {
   console.log("🧪 Testing Gemini API connection...");
@@ -374,7 +353,7 @@ Please write the email reply now:`;
       
       let errorMessage = data.error?.message || `HTTP Error ${response.status}`;
       
-      // Helpful error messages
+   
       if (errorMessage.includes("API key")) {
         errorMessage += "\n\nGet a valid API key from: https://makersuite.google.com/app/apikey";
       } else if (errorMessage.includes("billing")) {
@@ -406,9 +385,6 @@ Please write the email reply now:`;
   }
 }
 
-// ============================================
-// UI INJECTION FUNCTIONS
-// ============================================
 
 function injectUI() {
   console.log("🎯 Attempting to inject UI...");
@@ -500,9 +476,7 @@ function injectUI() {
   
   console.log("✅ UI elements created");
 
-  // ============================================
-  // BUTTON CLICK HANDLER
-  // ============================================
+ 
   
   button.addEventListener('click', async function() {
     const originalButton = this;
@@ -510,7 +484,7 @@ function injectUI() {
     const originalBackground = originalButton.style.background;
     
     try {
-      // Step 1: Show testing state
+    
       originalButton.innerHTML = '🧪 Testing API...';
       originalButton.style.background = 'linear-gradient(135deg, #FFA726 0%, #FB8C00 100%)';
       originalButton.style.cursor = 'wait';
@@ -530,7 +504,7 @@ function injectUI() {
         return;
       }
       
-      // Step 3: Get email content
+      
       originalButton.innerHTML = '📧 Reading email...';
       originalButton.style.background = 'linear-gradient(135deg, #66BB6A 0%, #43A047 100%)';
       
@@ -548,32 +522,32 @@ function injectUI() {
         return;
       }
       
-      // Step 4: Generate reply
+    
       originalButton.innerHTML = '⚡ Generating...';
       originalButton.style.background = 'linear-gradient(135deg, #5C6BC0 0%, #3949AB 100%)';
       
       const selectedTone = toneSelect.value;
       const reply = await generateEmailReply(emailContent, selectedTone);
       
-      // Step 5: Insert reply
+     
       originalButton.innerHTML = '📝 Inserting...';
       originalButton.style.background = 'linear-gradient(135deg, #AB47BC 0%, #8E24AA 100%)';
       
       const inserted = insertTextIntoComposeBox(reply);
       
       if (inserted) {
-        // Success state
+    
         originalButton.innerHTML = '✅ Done!';
         originalButton.style.background = 'linear-gradient(135deg, #00C853 0%, #00E676 100%)';
         
-        // Reset after 2 seconds
+       
         setTimeout(() => {
           originalButton.innerHTML = originalHTML;
           originalButton.style.background = originalBackground;
           originalButton.style.cursor = 'pointer';
         }, 2000);
       } else {
-        // Failed to insert
+    
         originalButton.innerHTML = '⚠️ Click to reply';
         originalButton.style.background = 'linear-gradient(135deg, #FFB300 0%, #FFA000 100%)';
         
@@ -588,7 +562,7 @@ function injectUI() {
     } catch (error) {
       console.error("❌ Process error:", error);
       
-      // Error state
+      
       originalButton.innerHTML = '❌ Error';
       originalButton.style.background = 'linear-gradient(135deg, #EF5350 0%, #D32F2F 100%)';
       
@@ -605,9 +579,7 @@ function injectUI() {
   return true;
 }
 
-// ============================================
-// INITIALIZATION
-// ============================================
+
 
 function initializeExtension() {
   console.log("⚡ Initializing Email Writer Assistant...");
@@ -633,7 +605,7 @@ function initializeExtension() {
     }
   }, 3000);
   
-  // Watch for DOM changes (Gmail is dynamic)
+
   const observer = new MutationObserver((mutations) => {
     let shouldInject = false;
     
@@ -666,7 +638,7 @@ function initializeExtension() {
     }
   });
   
-  // Start observing
+ 
   observer.observe(document.body, {
     childList: true,
     subtree: true,
@@ -674,7 +646,7 @@ function initializeExtension() {
     characterData: false
   });
   
-  // Also watch for URL changes (when opening different emails)
+
   let lastUrl = location.href;
   const urlObserver = new MutationObserver(() => {
     const currentUrl = location.href;
@@ -690,16 +662,16 @@ function initializeExtension() {
   console.log("✅ Extension initialized successfully");
 }
 
-// Start the extension when page is ready
+  
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeExtension);
 } else {
   initializeExtension();
 }
 
-// Global error handler for the extension
 window.addEventListener('error', function(event) {
   console.error('Extension Error:', event.error);
 });
+
 
 console.log("🎊 Email Writer Assistant ready!");
