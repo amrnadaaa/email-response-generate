@@ -1,0 +1,41 @@
+/* content.css - Additional styling */
+
+/* Button hover effects */
+#ai-reply-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+}
+
+#ai-reply-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
+}
+
+/* Tone select hover effects */
+#ai-tone-select:hover {
+  border-color: #4285f4 !important;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+#ai-tone-select:focus {
+  border-color: #4285f4 !important;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+  outline: none;
+}
+
+/* Container hover effect */
+#ai-extension-container:hover {
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
+  border-color: #aecbfa;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+#ai-reply-button[style*="Generating"] {
+  animation: pulse 1.5s infinite;
+}
